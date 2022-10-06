@@ -1,0 +1,125 @@
+<html>
+    <iframe src="{{sound}}" allow="autoplay" style="display:none" id="iframeAudio">
+    </iframe> 
+    <body>
+        <h2>Press P to start listening</h2>
+             <button id="record">Buzz In!</button>
+            <p>{{points}}</p>
+            <div id="parent">
+            </div>
+    </body>
+
+<head>
+<script>
+var isScriptOn = false
+navigator.mediaDevices.getUserMedia({audio:true})
+      .then(stream => {handlerFunction(stream)})
+            function handlerFunction(stream) {
+            rec = new MediaRecorder(stream);
+            rec.ondataavailable = e => {
+              audioChunks.push(e.data);
+              if (rec.state == "inactive"){
+                let blob = new Blob(audioChunks,{type:'audio/wav;codecs=0'});
+                var data = new FormData()
+                data.append('file', blob, 'file')
+                sendData(data)
+                setTimeout(() => {
+                    location.reload()
+                }, (3000));
+              }
+            }
+          }
+
+          var sound2 = "{{sound}}"
+
+        var source = '{{content}}'
+
+        function sendData(data){
+            fetch('https://0f42-2601-85-c380-340-e092-bb64-e5c3-9f4.ngrok.io/test', {
+                method:'POST',
+                body: data
+            })
+        }
+           adio =  document.createElement('audio')
+           answer =  document.createElement('audio')
+           document.getElementById('parent').append(answer)
+           document.getElementById('parent').append(adio)
+
+        answer.setAttribute('src',sound2)
+
+        adio.setAttribute("src",source)
+        adio.autoplay = false;
+          record = document.getElementById('record')
+          
+          window.onkeypress = function(event) {
+             if (event.keyCode == 32) {
+                if (!isScriptOn){
+                    adio.pause()
+                    isScriptOn = true;
+                    console.log('I was clicked')
+                    record.disabled = true;
+                    record.style.backgroundColor = "blue"
+                    audioChunks = [];
+                    rec.start();
+                    x = setTimeout(stop,4000)
+                }
+            }
+            if (event.keyCode == 112){
+                adio.play()
+            }
+        }
+        function reload(){
+            location.reload()
+        }
+        record.onclick = e => {
+            if (!isScriptOn){
+                    adio.pause()
+                    isScriptOn = true;
+                    console.log('I was clicked')
+                    record.disabled = true;
+                    record.style.backgroundColor = "blue"
+                    audioChunks = [];
+                    rec.start();
+                    x = setTimeout(stop,4000)
+                }
+        }
+        stop = function(){
+          console.log("I was clicked")
+          record.disabled = false;
+          stop.disabled=true;
+          record.style.backgroundColor = "red"
+          rec.stop();
+          isScriptOn = false;
+        }
+
+</script>
+
+<style>
+    p {
+        position: absolute;
+            top: 0%;
+            left: 50%; 
+            transform: translate(-50%, -50%);
+            font-size: 15em;
+    }
+    #record {
+        position: absolute;
+        top: 60%;
+        left: 50%; 
+      transform: translate(-50%, -50%);
+      font-size: 2em;
+      border-radius: 20%;
+
+}
+
+
+h2 {
+    text-align: center;
+    font-size: 3em;
+    }
+body {
+    background-color:aqua
+}
+</style>
+</head>
+</html>
